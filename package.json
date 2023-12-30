@@ -1,0 +1,25 @@
+{
+  "name": "ptolemy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "publish": "gcloud builds submit --tag gcr.io/geotory/ptolemy",
+    "deploy": "gcloud run deploy --image gcr.io/geotory/ptolemy --platform managed --region us-central1 --port 3005 --allow-unauthenticated ptolemy",
+    "ship": "npm run publish && npm run deploy"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@turf/turf": "^6.5.0",
+    "axios": "^1.6.3",
+    "express": "^4.18.2",
+    "shpjs": "^4.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
