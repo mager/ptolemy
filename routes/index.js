@@ -34,8 +34,10 @@ router.post("/geojson", async (req, res) => {
     }
 
     // If the url doesn't include github.com, add it
-    if (!url.includes("github.com")) {
-        return errorResponse(res, 400, "Invalid url, must include github.com");
+    const validHosts = ["github.com", "raw.githubusercontent.com"];
+    const urlHost = new URL(url).host;
+    if (!validHosts.includes(urlHost)) {
+        return errorResponse(res, 400, `Invalid url: ${url}`);
     }
 
     try {
