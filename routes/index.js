@@ -10,6 +10,8 @@ import {
 
 const router = express.Router();
 
+const validHosts = ["github.com", "raw.githubusercontent.com"];
+
 router.post("/geojson", async (req, res) => {
     // **
     // * Convert a shapefile to geojson
@@ -17,6 +19,7 @@ router.post("/geojson", async (req, res) => {
     // * @param {object} options - Options for the conversion
     // * @param {object} options.simplify - Options for simplifying the geojson
     // * @param {number} options.simplify.tolerance - The tolerance for simplifying the geojson (eg. 0.01)
+    // * @param {boolean} options.union - Whether to union the geojson
     // * @param {string} url - The url of the file to convert
     // * @returns {object} - The converted geojson
     const { from, options, url } = req.body;
@@ -34,7 +37,6 @@ router.post("/geojson", async (req, res) => {
     }
 
     // If the url doesn't include github.com, add it
-    const validHosts = ["github.com", "raw.githubusercontent.com"];
     const urlHost = new URL(url).host;
     if (!validHosts.includes(urlHost)) {
         return errorResponse(res, 400, `Invalid url: ${url}`);
@@ -45,6 +47,20 @@ router.post("/geojson", async (req, res) => {
         const data = await shp(response.data);
 
         if (options) {
+            if (options.union) {
+                console.log("EXPERIMENTAL: Unioning polygons")
+                const fc = turf.featureCollection(data.features);
+                let polygon = turf.polygon([]);
+                for (const feature of fc.features) {
+                    try {
+                        polygon = turf.union(polygon, turf.polygon(feature.geometry.coordinates));
+                    } catch (error) {
+                        console.log(`Error unioning feature: ${error}`);
+                    }
+                }
+                const outerOutline = turf.convex(polygon);
+                data.features = [outerOutline];
+            }
             if (options.simplify) {
                 const fc = turf.featureCollection(data.features);
                 const simplified = turf.simplify(fc, {
