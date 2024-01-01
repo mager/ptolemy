@@ -51,6 +51,22 @@ router.post("/geojson", async (req, res) => {
         const response = await axios.get(url, { responseType: "arraybuffer" });
         const data = await shp(response.data);
 
+        const validFeatures = [];
+        // Validate the geojson
+        for (const feature of data.features) {
+            if (feature.geometry.type === "Polygon") {
+                if (validatePolygon(feature.geometry)) {
+                    validFeatures.push(feature);
+                }
+            }
+            if (feature.geometry.type === "MultiPolygon") {
+                if (validateMultiPolygon(feature.geometry)) {
+                    validFeatures.push(feature);
+                }
+            }
+        }
+        data.features = validFeatures;
+
         if (options) {
             if (options.union) {
                 console.log("EXPERIMENTAL: Unioning polygons")
@@ -83,3 +99,54 @@ router.post("/geojson", async (req, res) => {
 });
 
 export default router;
+
+const validatePolygon = (polygon) => {
+    if (!polygon.coordinates) {
+        console.log("Invalid Polygon coordinates");
+        return false;
+    }
+    if (!polygon.coordinates[0]) {
+        console.log("Invalid Polygon coordinates (outer ring)");
+        return false;
+    }
+    if (!polygon.coordinates[0][0]) {
+        console.log("Invalid Polygon coordinates (inner ring)");
+        return false;
+    }
+    if (polygon.coordinates[0][0].length !== 2) {
+        console.log("Invalid Polygon coordinates (too small)");
+        return false;
+    }
+
+    // Ensure that the first and last coordinates are the same
+    const first = polygon.coordinates[0][0];
+    const last = polygon.coordinates[0][polygon.coordinates[0].length - 1];
+    if (first[0] !== last[0] || first[1] !== last[1]) {
+        console.log("Invalid Polygon coordinates (first and last coordinates are not the same)");
+        return false;
+    }
+    return true;
+}
+
+const validateMultiPolygon = (multiPolygon) => {
+    if (!multiPolygon.coordinates) {
+        console.log("Invalid MultiPolygon coordinates");
+        return false;
+    }
+    if (!multiPolygon.coordinates[0]) {
+        console.log("Invalid MultiPolygon coordinates (outer ring)");
+        return false;
+    }
+    if (!multiPolygon.coordinates[0][0]) {
+        console.log("Invalid MultiPolygon coordinates (inner ring)");
+        return false;
+    }
+
+    // Validate each polygon in the multipolygon
+    for (const polygon of multiPolygon.coordinates) {
+        if (!validatePolygon(polygon)) {
+            return false;
+        }
+    }
+    return true;
+}
