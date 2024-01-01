@@ -1,0 +1,68 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Ptolemy",
+    "description": "A backend service for manipulating geometries",
+    "version": "1.0.0"
+  },
+  "host": "https://ptolemy-zhokjvjava-uc.a.run.app/api/geojson",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/geojson": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Fields for converting a shapefile to geojson",
+            "schema": {
+              "$ref": "#/definitions/geojson"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "geojson": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "string",
+          "example": "shapefile"
+        },
+        "url": {
+          "type": "string",
+          "example": "https://raw.githubusercontent.com/uber-common/deck.gl-data/master/website/bart-stations.json"
+        },
+        "options": {
+          "type": "object",
+          "properties": {
+            "simplify": {
+              "type": "object",
+              "properties": {
+                "tolerance": {
+                  "type": "number",
+                  "example": 0.01
+                }
+              }
+            },
+            "union": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

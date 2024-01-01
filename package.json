@@ -9,7 +9,8 @@
     "dev": "nodemon index.js",
     "publish": "gcloud builds submit --tag gcr.io/geotory/ptolemy",
     "deploy": "gcloud run deploy --image gcr.io/geotory/ptolemy --platform managed --region us-central1 --port 3005 --allow-unauthenticated ptolemy",
-    "ship": "npm run publish && npm run deploy"
+    "ship": "npm run publish && npm run deploy",
+    "swagger": "node ./swagger.js"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +21,7 @@
     "shpjs": "^4.0.4"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "swagger-autogen": "^2.23.7"
   }
 }

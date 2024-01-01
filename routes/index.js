@@ -22,6 +22,11 @@ router.post("/geojson", async (req, res) => {
     // * @param {boolean} options.union - Whether to union the geojson
     // * @param {string} url - The url of the file to convert
     // * @returns {object} - The converted geojson
+    /*  #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Fields for converting a shapefile to geojson',
+            schema: { $ref: '#/definitions/geojson' }
+    } */
     const { from, options, url } = req.body;
 
     if (!from) {
