@@ -2,6 +2,7 @@
 import axios from "axios";
 import express from "express";
 import shp from "shpjs";
+import { check } from "@placemarkio/check-geojson"
 import * as turf from "@turf/turf";
 import {
     errorResponse,
@@ -51,19 +52,28 @@ router.post("/geojson", async (req, res) => {
         const response = await axios.get(url, { responseType: "arraybuffer" });
         const data = await shp(response.data);
 
-        const validFeatures = [];
         // Validate the geojson
-        for (const feature of data.features) {
+        const validFeatures = [];
+        for (let i = 0; i < data.features.length; i++) {
+            const feat = data.features[i];
             // TODO: Handle the case when a polygon is actually a multipolygon
-            if (feature.geometry.type === "Polygon") {
-                if (validatePolygon(feature.geometry)) {
-                    validFeatures.push(feature);
+            // if (feature.geometry.type === "Polygon") {
+            //     if (validatePolygon(feature.geometry)) {
+            //         validFeatures.push(feature);
+            //     }
+            // }
+            // if (feature.geometry.type === "MultiPolygon") {
+            //     if (validateMultiPolygon(feature.geometry)) {
+            //         validFeatures.push(feature);
+            //     }
+            // }
+            try {
+                const parseValue = check(JSON.stringify(feat));
+                if (parseValue) {
+                    validFeatures.push(feat);
                 }
-            }
-            if (feature.geometry.type === "MultiPolygon") {
-                if (validateMultiPolygon(feature.geometry)) {
-                    validFeatures.push(feature);
-                }
+            } catch (e) {
+                console.log(e)
             }
         }
         data.features = validFeatures;
