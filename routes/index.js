@@ -54,6 +54,7 @@ router.post("/geojson", async (req, res) => {
         const validFeatures = [];
         // Validate the geojson
         for (const feature of data.features) {
+            // TODO: Handle the case when a polygon is actually a multipolygon
             if (feature.geometry.type === "Polygon") {
                 if (validatePolygon(feature.geometry)) {
                     validFeatures.push(feature);
@@ -149,4 +150,19 @@ const validateMultiPolygon = (multiPolygon) => {
         }
     }
     return true;
+}
+
+const convertIncorrectPolygonToMultiPolygon = (feature) => {
+    const multiPolygonCoords = [];
+
+    for (let i = 0; i < feature.geometry.coordinates.length; i++) {
+        const polygon = [];
+        console.log(feature.geometry.coordinates[i]);
+    }
+
+    return {
+        type: "MultiPolygon",
+        coordinates: [],
+        properties: feature.properties,
+    };
 }
