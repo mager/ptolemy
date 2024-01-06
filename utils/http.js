@@ -5,7 +5,6 @@ export const errorResponse = (res, code, message) => {
     });
 };
 
-// TODO: Fix any type
 export const successResponse = (
     res,
     resp,

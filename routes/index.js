@@ -62,6 +62,19 @@ router.post("/geojson", async (req, res) => {
         const centroid = turf.centroid(data);
         context.centroid = centroid.geometry.coordinates;
 
+        const bbox = turf.bbox(data);
+        const bboxPolygon = turf.bboxPolygon(bbox);
+        // https://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
+        const GLOBE_WIDTH = 256; // a constant in Google's map projection
+        const west = bbox[0];
+        const east = bbox[2];
+        const angle = east - west;
+        if (angle < 0) {
+            context.zoom = 1;
+        }
+        const zoom = Math.round(Math.log(960 * 360 / angle / GLOBE_WIDTH) / Math.LN2);
+        context.zoom = zoom;
+
         // Validate the geojson
         const validFeatures = [];
         for (let i = 0; i < data.features.length; i++) {
