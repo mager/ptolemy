@@ -18,22 +18,35 @@
           {
             "name": "body",
             "in": "body",
-            "description": "Fields for converting a shapefile to geojson",
             "schema": {
-              "$ref": "#/definitions/geojson"
+              "type": "object",
+              "properties": {
+                "from": {
+                  "example": "any"
+                },
+                "options": {
+                  "example": "any"
+                },
+                "url": {
+                  "example": "any"
+                }
+              }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "The GeoJSON response.",
+            "schema": {
+              "$ref": "#/definitions/geojsonResp"
+            }
           }
         }
       }
     }
   },
   "definitions": {
-    "geojson": {
+    "geojsonReq": {
       "type": "object",
       "properties": {
         "from": {
@@ -59,6 +72,79 @@
             "union": {
               "type": "boolean",
               "example": true
+            }
+          }
+        }
+      }
+    },
+    "geojsonResp": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "centroid": {
+              "type": "array",
+              "example": [
+                -122.27145004272461,
+                37.80499267578125
+              ],
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "geojson": {
+          "type": "object",
+          "properties": {
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "geometry": {
+                    "type": "object",
+                    "properties": {
+                      "coordinates": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "example": [
+                              -122.270833,
+                              37.804991
+                            ],
+                            "items": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      },
+                      "type": {
+                        "type": "string",
+                        "example": "Polygon"
+                      }
+                    }
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "centroid": {
+                        "type": "array",
+                        "example": [
+                          -122.270833,
+                          37.8049955
+                        ],
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }

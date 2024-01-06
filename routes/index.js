@@ -26,9 +26,15 @@ router.post("/geojson", async (req, res) => {
     /*  #swagger.parameters['body'] = {
             in: 'body',
             description: 'Fields for converting a shapefile to geojson',
-            schema: { $ref: '#/definitions/geojson' }
+            schema: { $ref: '#/definitions/geojsonReq' }
+        #swagger.responses[200] = {
+            description: 'The GeoJSON response.',
+            schema: { $ref: '#/definitions/geojsonResp' }
     } */
     const { from, options, url } = req.body;
+    const context = {
+        centroid: null,
+    };
 
     if (!from) {
         return errorResponse(res, 400, "Missing from");
@@ -52,13 +58,9 @@ router.post("/geojson", async (req, res) => {
         const response = await axios.get(url, { responseType: "arraybuffer" });
         const data = await shp(response.data);
 
-        if (!data.properties) {
-            data.properties = {};
-        }
-
         // Find the centroid of the entire geojson
         const centroid = turf.centroid(data);
-        data.properties.centroid = centroid.geometry.coordinates;
+        context.centroid = centroid.geometry.coordinates;
 
         // Validate the geojson
         const validFeatures = [];
@@ -110,7 +112,13 @@ router.post("/geojson", async (req, res) => {
                 data.features = simplified.features;
             }
         }
-        return successResponse(res, data);
+
+        const resp = {
+            context,
+            geojson: data,
+        };
+
+        return successResponse(res, resp);
     } catch (error) {
         console.log(error);
         return errorResponse(res, 500, "Error converting shapefile to geojson");

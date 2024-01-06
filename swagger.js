@@ -7,7 +7,7 @@ const doc = {
     },
     host: 'https://ptolemy-zhokjvjava-uc.a.run.app/api/geojson',
     definitions: {
-        geojson: {
+        geojsonReq: {
             from: 'shapefile',
             url: 'https://raw.githubusercontent.com/uber-common/deck.gl-data/master/website/bart-stations.json',
             options: {
@@ -15,6 +15,49 @@ const doc = {
                     tolerance: 0.01,
                 },
                 union: true,
+            },
+        },
+        geojsonResp: {
+            context: {
+                centroid: [
+                    -122.27145004272461,
+                    37.80499267578125,
+                ],
+            },
+            geojson: {
+                features: [
+                    {
+                        geometry: {
+                            coordinates: [
+                                [
+                                    [
+                                        -122.270833,
+                                        37.804991,
+                                    ],
+                                    [
+                                        -122.270833,
+                                        37.805,
+                                    ],
+                                    [
+                                        -122.270833,
+                                        37.805,
+                                    ],
+                                    [
+                                        -122.270833,
+                                        37.804991,
+                                    ],
+                                ],
+                            ],
+                            type: 'Polygon',
+                        },
+                        properties: {
+                            centroid: [
+                                -122.270833,
+                                37.8049955,
+                            ],
+                        },
+                    }
+                ]
             },
         },
     },
