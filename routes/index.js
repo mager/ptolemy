@@ -52,6 +52,14 @@ router.post("/geojson", async (req, res) => {
         const response = await axios.get(url, { responseType: "arraybuffer" });
         const data = await shp(response.data);
 
+        if (!data.properties) {
+            data.properties = {};
+        }
+
+        // Find the centroid of the entire geojson
+        const centroid = turf.centroid(data);
+        data.properties.centroid = centroid.geometry.coordinates;
+
         // Validate the geojson
         const validFeatures = [];
         for (let i = 0; i < data.features.length; i++) {
